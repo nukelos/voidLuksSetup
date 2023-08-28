@@ -11,22 +11,22 @@ root_part_size="20G"		#Size of the root partition. Required size depends on how 
 				#Arch wiki recommends 15-20G (as of 24-Mar-2021)
 				#Alternatively, leave blank to omit creating a separate home partition, and have root occupy the entire drive
 				
-swap_size=""			#If you want to use suspend-to-disk (AKA hibernate), should be >= amount of RAM (some recommend 2x RAM if you have <8GB).
+swap_size="28"			#If you want to use suspend-to-disk (AKA hibernate), should be >= amount of RAM (some recommend 2x RAM if you have <8GB).
 				#Otherwise, how much swap space (if any) is needed is debatable, rule of thumb I use is equal to square root of RAM (rounded up to whole GB)
 
-username="user"			#Desired username for regular (non-root) user of the Void installation you're making
+username="uncosine"			#Desired username for regular (non-root) user of the Void installation you're making
 
-hostname="desktop"		#Desired name to be used for the hostname of the Void installation as well as the volume group name
+hostname="VoidLin"		#Desired name to be used for the hostname of the Void installation as well as the volume group name
 
 fs_type="ext4"			#Desired filesystem to be used for the root and home partitions
 
-libc="musl" 			#"musl" for musl, "" for glibc.
+libc="" 			#"musl" for musl, "" for glibc.
 
 language="en_US.UTF-8"
 
 vendor_cpu="intel"		#Enter either "amd" or "intel" (all lowercase). This script assumes you're installing on an x86_64 system
 
-vendor_gpu="amd"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
+vendor_gpu="nvidia"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
 				#For AMD will install the OpenGL and Vulkan driver (mesa, not amdvlk), as well as the video acceration drivers.
 				#For Intel this installs OpenGL and Vulkan drivers, and video acceleration drivers
 				#For Nvidia this installs the proprietary driver. It assumes you're using a non-legacy GPU, which generally means any Geforce 600 or newer GTX card (some of the low end GT cards from 600, 700, and 800 series are legacy) 
@@ -39,7 +39,7 @@ graphical_de="kde"		#"xfce" for an XFCE4 (xorg) install
                         	#Or "kde" for a KDE Plasma 5 (wayland) install. Somewhat reduced install compared to the full 'kde5' meta-package. Uses a console-based display manager (emptty) rather than SDDM (as this would require Xorg).
                         	#Or leave blank (just double quotes, "") to not install DE. Will skip graphics driver installation as well
 
-void_repo="https://alpha.de.repo.voidlinux.org/"	#List of mirrors can be found here: https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
+void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found here: https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
 
 #END MANDATORY FIELDS
 ###############################################################################################################
@@ -48,7 +48,7 @@ void_repo="https://alpha.de.repo.voidlinux.org/"	#List of mirrors can be found h
 #These can be edited prior to running the script, but you can also easily install (and uninstall) packages, and enable/disable services, once you're up and running.
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
-apps="xorg-minimal xorg-fonts nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils" #flatpak alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg-minimal xorg-fonts nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -69,7 +69,7 @@ declare apps_amd_cpu="linux-firmware-amd"
 declare apps_amd_gpu="linux-firmware-amd mesa-dri vulkan-loader mesa-vulkan-radeon mesa-vaapi mesa-vdpau xf86-video-amdgpu"
 declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
 declare apps_nvidia_gpu="nvidia"
-declare apps_kde="kde5 kde5-baseapps kcron pulseaudio ark user-manager plasma-wayland-protocols xdg-desktop-portal-kde plasma-applet-active-window-control" #libreoffice-kde plasma-disks partitionmanager 
+declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen" 
 #plasma-firewall GUI front end for ufw doesn't seem to work properly as of April/21
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
 
