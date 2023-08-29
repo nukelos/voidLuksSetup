@@ -135,15 +135,16 @@ done
 if [[ $disk_selected == *"sd"* ]]; then
 	efi_part=$(echo $disk_selected'1')
 	luks_part=$(echo $disk_selected'2')
-elif [[ $disk_selected == *"nvme"* ]]; then
+elif [[ $disk_selected == *"nvme0n1"* ]]; then
 	efi_part=$(echo $disk_selected'p1')
-	luks_part=$(echo $disk_selected'p2')
+	luks_part=$(echo $disk_selected'p3')
 fi
 
 #Wipe disk
-wipefs -aq $disk_selected
+#wipefs -aq $disk_selected
 #Format disk as GPT, create EFI partition with size selected above and a 2nd partition with the remaining disk space
-printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+#printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+
 #Create LUKS encrypted partition
 echo $luks_pw | cryptsetup -q luksFormat --type luks1 $luks_part
 #Open encrypted partition
