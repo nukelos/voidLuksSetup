@@ -4,7 +4,7 @@
 #BEGIN MANDATORY FIELDS
 #These fields must be configured as per your computer hardware and desired install configuration
 
-efi_part_size="260M"		#Minimum of 100M, Arch wiki recommends at least 260M (as of 24-Mar-2021)
+efi_part_size="100M"		#Minimum of 100M, Arch wiki recommends at least 260M (as of 24-Mar-2021)
 
 root_part_size="20G"		#Size of the root partition. Required size depends on how much software you ultimately install
 				#If you run this install script without modifying the apps to be installed (including KDE graphical DE), about 4-5G is used
