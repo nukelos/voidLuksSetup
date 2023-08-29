@@ -48,7 +48,7 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 #These can be edited prior to running the script, but you can also easily install (and uninstall) packages, and enable/disable services, once you're up and running.
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
-apps="xorg-minimal xorg-fonts nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
