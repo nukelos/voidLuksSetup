@@ -1,9 +1,9 @@
 # voidLuksSetup
 Bash script for installing Void Linux with disk encryption. Also performs some post-install configuration, such as installing graphics drivers, a graphical DE, and other applications, enabling/disabling services, creating a non-root user, etc. The script is designed to be user-configurable, by modifying a number of text fields near the start of the script prior to execution.
 
-# 🚨 Project not receiving maintenance
+# 🚨 Project will try to maintain | User is still a newbie
 
-I no longer run Void, and have not worked on this script for some time. It may be out of date and/or have unaddressed issues.
+I'm new to Void Linux and to scripting so the learning curve will be at its peak on my end. I'll try to update and take time to learn to this one as well. I'll update this from time to time. The first thing is to test my setup on musl. The old setup of `dcloud-ca` as still up-to-date somehow but there's going a need to re-check on that one.
 
 # References
 Much of what is done in this script came almost straight from the official [Void Documentation](https://docs.voidlinux.org/installation/guides/fde.html). I just adapted commands where necessary to make them script-able, as well as made a number of assumptions/personal choices as to what additional configuration/utilities should be added.
@@ -25,7 +25,7 @@ There are a number of other smaller assumptions made in various default values p
 1. Create a Void live image (instructions [here](https://docs.voidlinux.org/installation/live-images/prep.html)). You can use the base image or whichever graphical 'flavor' you'd like (it won't impact the new Void install you're creating).
 2. Boot the live image, the login will be user:anon, password: voidlinux
 3. From the terminal, run: *sudo xbps-install -Suy xbps*
-4. Download the script. Either do so manually, or use git: *sudo xbps-install -Suy git; git clone https<nolink>://github.com/dcloud-ca/voidLuksSetup.git*
+4. Download the script. Either do so manually, or use git: *sudo xbps-install -Suy git; git clone https<nolink>://github.com/Darkinx/voidLuksSetup.git*
 5. Optionally, install your desired text editor (the pre-installed editor(s) available will vary depending on which live image you're using): *sudo xbps-install -Suy [editor]*, where [editor] is the package name of the editor to install. For a console based editor I like nano. If running a graphical live image, you can install something like gedit or kate5. 
 6. Open void_luks_setup.bash in the editor (e.g. *nano void_luks_setup.bash*). Edit the fields in the first section based on your configuration, as per the comments in the script. Optionally, you can also edit the fields in the next two sections as well. Even if you don't configure the latter two sections prior to installation, it should generally be fairly easy to alter in the future by installing/removing packages and enabling/disabling services once you're up and running.
 7. Run: *chmod +x void_luks_setup.bash; sudo ./void_luks_setup.bash*
