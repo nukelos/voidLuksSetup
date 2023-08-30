@@ -282,7 +282,7 @@ chroot /mnt grub-install $disk_selected
 xbps-reconfigure -far /mnt/
 
 #Allow users in the wheel group to use sudo
-sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" /mnt/etc/sudoers
+sed -i "s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/" /mnt/etc/sudoers
 #Change the default text editor from VI to nano for visudo and sudoedit, if nano is installed
 if [[ $apps == *"nano"* ]]; then
 	echo "Defaults editor=/usr/bin/nano" >> /mnt/etc/sudoers
