@@ -77,7 +77,7 @@ declare apps_nvidia_gpu="nvidia"
 declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen plasma-nm plasma-pa pcmanfm-qt plasma-firewall" #GUI front end for ufw, works fine now as of 30/08/2023
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
 declare apps_pipewire="alsa-pipewire pipewire wireplumber"
-declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit "
+declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
 declare game_amd="vulkan-loader vulkan-loader-32bit libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
 declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
 
@@ -387,4 +387,5 @@ if [[ $tmp == "y" ]]; then
 	reboot
 fi
 
-echo -e "\nDone\n"
+echo -e "\nDone Setup\n"
+echo "Apps Installed: \n$apps"
