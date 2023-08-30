@@ -4,7 +4,7 @@
 #BEGIN MANDATORY FIELDS
 #These fields must be configured as per your computer hardware and desired install configuration
 
-efi_part_size="260M"		#Minimum of 100M, Arch wiki recommends at least 260M (as of 24-Mar-2021)
+efi_part_size="100M"		#Minimum of 100M, Arch wiki recommends at least 260M (as of 24-Mar-2021)
 
 root_part_size="20G"		#Size of the root partition. Required size depends on how much software you ultimately install
 				#If you run this install script without modifying the apps to be installed (including KDE graphical DE), about 4-5G is used
@@ -48,7 +48,7 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 #These can be edited prior to running the script, but you can also easily install (and uninstall) packages, and enable/disable services, once you're up and running.
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
-apps="xorg-minimal xorg-fonts nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -135,15 +135,16 @@ done
 if [[ $disk_selected == *"sd"* ]]; then
 	efi_part=$(echo $disk_selected'1')
 	luks_part=$(echo $disk_selected'2')
-elif [[ $disk_selected == *"nvme"* ]]; then
+elif [[ $disk_selected == *"nvme0n1"* ]]; then
 	efi_part=$(echo $disk_selected'p1')
-	luks_part=$(echo $disk_selected'p2')
+	luks_part=$(echo $disk_selected'p3')
 fi
 
 #Wipe disk
-wipefs -aq $disk_selected
+#wipefs -aq $disk_selected
 #Format disk as GPT, create EFI partition with size selected above and a 2nd partition with the remaining disk space
-printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+#printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+
 #Create LUKS encrypted partition
 echo $luks_pw | cryptsetup -q luksFormat --type luks1 $luks_part
 #Open encrypted partition
