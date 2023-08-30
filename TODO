@@ -1,3 +1,5 @@
 - [ ] Update to accomodate searching of other partition
 - [ ] Have Barebone KDE to be usable
     - [ ] Pipewire audio backend
+- [ ] Find way to possibly detect gpu and cpu vendor
+- [ ] return the efi setup
