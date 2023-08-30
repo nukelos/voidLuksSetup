@@ -296,6 +296,7 @@ if [[ $vendor_gpu == "nvidia" ]] || [[ $vendor_cpu == "intel" ]]; then
 fi
 
 if $is_game_ready; then
+    xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-multilib
 	xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-multilib-nonfree
 fi
 #Install all previously selected packages. This includes all applications in the "apps" variable, as well as packages for graphics drivers, CPU microcode, and graphical DE based on selected options
@@ -388,4 +389,4 @@ if [[ $tmp == "y" ]]; then
 fi
 
 echo -e "\nDone Setup\n"
-echo "Apps Installed: \n$apps"
+echo -e "Apps Installed: \n$apps"
