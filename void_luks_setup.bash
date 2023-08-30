@@ -99,24 +99,25 @@ case $vendor_cpu in
     "intel")
         apps="$apps $apps_intel_cpu"
 		if [[$is_game_ready]]; then
-			apps="$apps $game_intel"
-        ;;
+          apps="$apps $game_intel"
+        fi
+		;;
 esac
 if [[ -n $graphical_de ]]; then
     case $vendor_gpu in
         "amd")
             apps="$apps $apps_amd_gpu"
 			if [[$is_game_ready]]; then
-				apps="$apps $game_amd"
-            fi
+		        apps="$apps $game_amd"
+      		fi
 			;;
         "intel")
             apps="$apps $apps_intel_gpu"
             ;;
         "nvidia")
             apps="$apps $apps_nvidia_gpu"
-			if [[$is_game_ready]]; then
-				apps="$apps nvidia-libs-32bit"
+		    if [[$is_game_ready]]; then
+			    apps="$apps nvidia-libs-32bit"
 			fi
             ;;
     esac
