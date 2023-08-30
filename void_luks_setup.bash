@@ -166,6 +166,7 @@ fi
 
 #Wipe disk
 #wipefs -aq $disk_selected
+wipefs -aq $luks_part
 #Format disk as GPT, create EFI partition with size selected above and a 2nd partition with the remaining disk space
 #printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
 
