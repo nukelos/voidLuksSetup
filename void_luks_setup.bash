@@ -53,7 +53,7 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
 #ntfs-3g is needed for the windows combo setup.
-apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 Signal-Desktop" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -77,7 +77,7 @@ declare apps_nvidia_gpu="nvidia"
 declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen plasma-nm plasma-pa pcmanfm-qt plasma-firewall" #GUI front end for ufw, works fine now as of 30/08/2023
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
 declare apps_pipewire="alsa-pipewire pipewire wireplumber"
-declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit"
+declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit "
 declare game_amd="vulkan-loader vulkan-loader-32bit libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
 declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
 
@@ -98,7 +98,7 @@ case $vendor_cpu in
         ;;
     "intel")
         apps="$apps $apps_intel_cpu"
-		if [[$is_game_ready]]; then
+		if $is_game_ready; then
           apps="$apps $game_intel"
         fi
 		;;
@@ -107,7 +107,7 @@ if [[ -n $graphical_de ]]; then
     case $vendor_gpu in
         "amd")
             apps="$apps $apps_amd_gpu"
-			if [[$is_game_ready]]; then
+			if $is_game_ready; then
 		        apps="$apps $game_amd"
       		fi
 			;;
@@ -116,13 +116,13 @@ if [[ -n $graphical_de ]]; then
             ;;
         "nvidia")
             apps="$apps $apps_nvidia_gpu"
-		    if [[$is_game_ready]]; then
+		    if $is_game_ready; then
 			    apps="$apps nvidia-libs-32bit"
 			fi
             ;;
     esac
-	if [[$is_game_ready]]; then
-				apps="$apps $game_driver"
+	if $is_game_ready; then
+	    apps="$apps $game_driver"
 	fi
 fi
 case $graphical_de in
@@ -138,7 +138,7 @@ esac
 
 
 ## Adding pipewire
-apps = "$apps $apps_pipewire"
+apps="$apps $apps_pipewire"
 
 #Read passwords for root user, non-root user, and LUKS encryption from user input
 declare luks_pw root_pw user_pw disk_selected
@@ -204,7 +204,7 @@ if [[ ! -z $root_part_size ]]; then
 fi
 
 #Create/mount EFI system partition filesystem
-# mkfs.vfat $efi_part
+#mkfs.vfat $efi_part
 mkdir -p /mnt/boot/efi
 mount $efi_part /mnt/boot/efi
 
@@ -295,7 +295,7 @@ if [[ $vendor_gpu == "nvidia" ]] || [[ $vendor_cpu == "intel" ]]; then
     xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-nonfree
 fi
 
-if [[$is_game_ready]]; then
+if $is_game_ready; then
 	xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-multilib-nonfree
 fi
 #Install all previously selected packages. This includes all applications in the "apps" variable, as well as packages for graphics drivers, CPU microcode, and graphical DE based on selected options
@@ -325,9 +325,10 @@ fi
 #Need to set this one up for XFCE
 pipewire_setup=('pipewire', 'wireplumber')
 for program in ${pipewire_setup[@]}; do
+    chroot /mnt mkdir -p /home/$username/.config/autostart
 	chroot /mnt ln -s /usr/share/applications/$program.desktop /home/$username/.config/autostart/$program.desktop
 done
-echo "X-KDE-AutostartScript=true" >> /mnt/home/$username/.config/autostart/pipewire.desktop
+echo "X-KDE-AutostartScript=true" >> /mnt/usr/share/applications/pipewire.desktop
 
 #Creates typical folders in user's home directory, sets ownership and permissions of the folders as well
 #It appears this is not necessary, as the user folders will automatically be created on first login
