@@ -39,6 +39,10 @@ graphical_de="kde"		#"xfce" for an XFCE4 (xorg) install
                         	#Or "kde" for a KDE Plasma 5 (wayland) install. Somewhat reduced install compared to the full 'kde5' meta-package. Uses a console-based display manager (emptty) rather than SDDM (as this would require Xorg).
                         	#Or leave blank (just double quotes, "") to not install DE. Will skip graphics driver installation as well
 
+is_game_ready=true		#Change to either "true" or "false" (all lowercase and remove the quotation)
+						#This will install all needed drivers for Steam and Lutris in accordance to the gpu vendor (except for mesa since that's universal)
+						#This will also includes gamemode and MangoHud for stats and maximixing CPU governor
+
 void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found here: https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
 
 #END MANDATORY FIELDS
@@ -48,7 +52,8 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 #These can be edited prior to running the script, but you can also easily install (and uninstall) packages, and enable/disable services, once you're up and running.
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
-apps="xorg nano elogind dbus apparmor ufw cronie ntp firefox xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+#ntfs-3g is needed for the windows combo setup.
+apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -69,9 +74,12 @@ declare apps_amd_cpu="linux-firmware-amd"
 declare apps_amd_gpu="linux-firmware-amd mesa-dri vulkan-loader mesa-vulkan-radeon mesa-vaapi mesa-vdpau xf86-video-amdgpu"
 declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
 declare apps_nvidia_gpu="nvidia"
-declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen" 
-#plasma-firewall GUI front end for ufw doesn't seem to work properly as of April/21
+declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen plasma-nm plasma-pa pcmanfm-qt plasma-firewall" #GUI front end for ufw, works fine now as of 30/08/2023
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
+declare apps_pipewire="alsa-pipewire pipewire wireplumber"
+declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit"
+declare game_amd="vulkan-loader vulkan-loader-32bit libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon	mesa-vulkan-radeon-32bit"
+declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
 
 #END CPU/DRIVER/DE PACKAGES
 ###############################################################################################################
@@ -90,20 +98,31 @@ case $vendor_cpu in
         ;;
     "intel")
         apps="$apps $apps_intel_cpu"
+		if [[$is_game_ready]]; then
+			apps="$apps $game_intel"
         ;;
 esac
 if [[ -n $graphical_de ]]; then
     case $vendor_gpu in
         "amd")
             apps="$apps $apps_amd_gpu"
-            ;;
+			if [[$is_game_ready]]; then
+				apps="$apps $game_amd"
+            fi
+			;;
         "intel")
             apps="$apps $apps_intel_gpu"
             ;;
         "nvidia")
             apps="$apps $apps_nvidia_gpu"
+			if [[$is_game_ready]]; then
+				apps="$apps nvidia-libs-32bit"
+			fi
             ;;
     esac
+	if [[$is_game_ready]]; then
+				apps="$apps $game_driver"
+	fi
 fi
 case $graphical_de in
     "kde")
@@ -115,6 +134,10 @@ case $graphical_de in
 	en_services+=("lightdm")
         ;;
 esac
+
+
+## Adding pipewire
+apps = "$apps $apps_pipewire"
 
 #Read passwords for root user, non-root user, and LUKS encryption from user input
 declare luks_pw root_pw user_pw disk_selected
@@ -180,7 +203,7 @@ if [[ ! -z $root_part_size ]]; then
 fi
 
 #Create/mount EFI system partition filesystem
-mkfs.vfat $efi_part
+# mkfs.vfat $efi_part
 mkdir -p /mnt/boot/efi
 mount $efi_part /mnt/boot/efi
 
@@ -232,6 +255,10 @@ fi
 echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
 sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_params /" /mnt/etc/default/grub
 
+#Modify GRUB again for scanning or other OS parition (like Windows partition)
+echo "GRUB_DISABLE_OS_PROBER=false" >> /mnt/etc/default/grub
+os-prober
+
 #To avoid having to enter the password twice on boot, a key will be configured to automatically unlock the encrypted volume on boot.
 #Generate keyfile
 dd bs=1 count=64 if=/dev/urandom of=/mnt/boot/volume.key
@@ -266,6 +293,10 @@ xbps-install -SuyR $void_repo/current/$libc -r /mnt xbps
 if [[ $vendor_gpu == "nvidia" ]] || [[ $vendor_cpu == "intel" ]]; then
     xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-nonfree
 fi
+
+if [[$is_game_ready]]; then
+	xbps-install -SyR $void_repo/current/$libc -r /mnt/ void-repo-multilib-nonfree
+fi
 #Install all previously selected packages. This includes all applications in the "apps" variable, as well as packages for graphics drivers, CPU microcode, and graphical DE based on selected options
 xbps-install -SyR $void_repo/current/$libc -r /mnt $apps
   
@@ -288,6 +319,14 @@ if [[ $apps == *"apparmor"* ]]; then
 	#Enable apparmor profile caching, which speeds up boot
 	sed -i 's/^#*write-cache/write-cache/i' /mnt/etc/apparmor/parser.conf
 fi
+
+#Setup of Pipewire to KDE Autostart
+#Need to set this one up for XFCE
+pipewire_setup=('pipewire', 'wireplumber')
+for program in ${pipewire_setup[@]}; do
+	chroot /mnt ln -s /usr/share/applications/$program.desktop /home/$username/.config/autostart/$program.desktop
+done
+echo "X-KDE-AutostartScript=true" >> /mnt/home/$username/.config/autostart/pipewire.desktop
 
 #Creates typical folders in user's home directory, sets ownership and permissions of the folders as well
 #It appears this is not necessary, as the user folders will automatically be created on first login
