@@ -77,8 +77,8 @@ declare apps_nvidia_gpu="nvidia"
 declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 kscreen plasma-nm plasma-pa pcmanfm-qt plasma-firewall" #GUI front end for ufw, works fine now as of 30/08/2023
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
 declare apps_pipewire="alsa-pipewire pipewire wireplumber"
-declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
-declare game_amd="vulkan-loader vulkan-loader-32bit libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
+declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit vulkan-loader vulkan-loader-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
+declare game_amd="libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
 declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
 
 #END CPU/DRIVER/DE PACKAGES
@@ -323,6 +323,15 @@ if [[ $apps == *"apparmor"* ]]; then
 	sed -i 's/^#*write-cache/write-cache/i' /mnt/etc/apparmor/parser.conf
 fi
 
+#Setup link of vulkan for Lutris
+#
+See: https://www.reddit.com/r/voidlinux/comments/ntre9x/comment/h35fuye/?utm_medium=android_app&utm_source=share&context=3
+if $is_game_ready; then
+    chroot /mnt sudo mv /etc/ld.so.cache /tmp
+    chroot /mnt sudo ldconfig
+    chroot /mnt ldconfig -p | grep /usr/lib32/libvulkan.so
+fi
+
 #Setup of Pipewire to KDE Autostart
 #Need to set this one up for XFCE
 pipewire_setup=('pipewire', 'wireplumber')
@@ -331,6 +340,10 @@ for program in ${pipewire_setup[@]}; do
 	chroot /mnt ln -s /usr/share/applications/$program.desktop /home/$username/.config/autostart/$program.desktop
 done
 echo "X-KDE-AutostartScript=true" >> /mnt/usr/share/applications/pipewire.desktop
+
+#Update .config permission due to changing some parts of it
+chroot /mnt chown $username:$username /home/$username/.config
+chroot /mnt chmod 755 /home/$username/.config
 
 #Creates typical folders in user's home directory, sets ownership and permissions of the folders as well
 #It appears this is not necessary, as the user folders will automatically be created on first login
