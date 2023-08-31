@@ -53,7 +53,7 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
 #ntfs-3g is needed for the windows combo setup.
-apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 Signal-Desktop" # alsa-utils gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -334,7 +334,7 @@ fi
 
 #Setup of Pipewire to KDE Autostart
 #Need to set this one up for XFCE
-pipewire_setup=('pipewire', 'wireplumber')
+pipewire_setup=('pipewire' 'wireplumber' 'pipewire-pulse')
 for program in ${pipewire_setup[@]}; do
     chroot /mnt mkdir -p /home/$username/.config/autostart
 	chroot /mnt ln -s /usr/share/applications/$program.desktop /home/$username/.config/autostart/$program.desktop
