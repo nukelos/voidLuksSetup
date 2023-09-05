@@ -344,6 +344,9 @@ echo "X-KDE-AutostartScript=true" >> /mnt/usr/share/applications/pipewire.deskto
 #Update .config permission due to changing some parts of it
 chroot /mnt chown $username:$username /home/$username/.config
 chroot /mnt chmod 755 /home/$username/.config
+chroot /mnt chown $username:$username /home/$username/.config/autostart
+chroot /mnt chmod 755 /home/$username/.config/autostart
+#need to update the method used here
 
 #Creates typical folders in user's home directory, sets ownership and permissions of the folders as well
 #It appears this is not necessary, as the user folders will automatically be created on first login
