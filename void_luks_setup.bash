@@ -4,9 +4,9 @@
 #BEGIN MANDATORY FIELDS
 #These fields must be configured as per your computer hardware and desired install configuration
 
-efi_part_size="300M"		#Minimum of 100M, Arch wiki recommends at least 300M (as of 09-Jul-2023)
+efi_part_size="100M"		#Minimum of 100M, Arch wiki recommends at least 300M (as of 09-Jul-2023)
 
-root_part_size="40G"		#Size of the root partition. Required size depends on how much software you ultimately install
+root_part_size="100G"		#Size of the root partition. Required size depends on how much software you ultimately install
 				#If you run this install script without modifying the apps to be installed (including KDE graphical DE), about 4-5G is used
 				#Arch wiki recommends 15-20G (as of 09-Jul-2023)
 				#Alternatively, leave blank to omit creating a separate home partition, and have root occupy the entire drive
@@ -54,9 +54,9 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
 #ntfs-3g is needed for the windows combo setup.
-apps="xorg nano vim elogind dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils tlp bash-completion" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano vim dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils tlp bash-completion" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
-bluetooth="bluez bluedevil" #bluedevil for GUI
+bluet="bluez bluedevil" #bluedevil for GUI
 blue_services="bluetoothd"
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
@@ -78,7 +78,10 @@ declare apps_amd_cpu="linux-firmware-amd"
 declare apps_amd_gpu="linux-firmware-amd mesa-dri vulkan-loader mesa-vulkan-radeon mesa-vaapi mesa-vdpau xf86-video-amdgpu"
 declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
 declare apps_nvidia_gpu="nvidia"
-declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular" #plasma-firewall GUI front end for ufw, still buggy 30/08/2023 #upower needed for battery notification. #powerdevil is for battery management but TLP is fine.
+declare apps_kde="plasma-desktop sddm elogind kcron ark user-manager xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular"
+	#plasma-firewall GUI front end for ufw, still buggy 30/08/2023 
+	#upower needed for battery notification. 
+	#powerdevil is for battery management but TLP is fine.
 declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
 declare apps_pipewire="alsa-pipewire pipewire wireplumber"
 declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit vulkan-loader vulkan-loader-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
@@ -96,10 +99,10 @@ if [[ -z $swap_size ]]; then
 fi
 
 #Check if user need bluetooth
-read -p "Do you want bluetooth packages? y/n: " response
+read -p "Do you want bluetooth packages? y/n: " response_bl
 
-if [[ $response == "y" ]]; then
-    apps="$apps $bluetooth"
+if [[ $response_bl == "y" ]]; then
+    apps="$apps $bluet"
 	en_services+=($blue_services)
 fi
 
