@@ -78,7 +78,7 @@ declare apps_amd_cpu="linux-firmware-amd"
 declare apps_amd_gpu="linux-firmware-amd mesa-dri vulkan-loader mesa-vulkan-radeon mesa-vaapi mesa-vdpau xf86-video-amdgpu"
 declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
 declare apps_nvidia_gpu="nvidia"
-declare apps_kde="plasma-desktop sddm elogind kcron ark xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular"
+declare apps_kde="plasma-desktop sddm elogind kcron ark spectacle xdg-desktop-portal-kde plasma-applet-active-window-control kde-gtk-config5 breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular"
 	#plasma-firewall GUI front end for ufw, still buggy 30/08/2023 
 	#upower needed for battery notification. 
 	#powerdevil is for battery management but TLP is fine.
