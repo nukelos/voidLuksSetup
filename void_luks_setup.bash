@@ -33,8 +33,7 @@ vendor_gpu="nvidia"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
 
 discards="rd.luks.allow-discards"	#If you're installing on an SSD and you want discard (automatic TRIM) enabled, enter "rd.luks.allow-discards".
 					#Otherwise, leave blank (just double quotes, "")
-					#Note that there privacy/security considerations to enabling TRIM with LUKS: https://wiki.archlinux.org/index.php/Dm-crypt/Specialties#Discard/TRIM_support_for_solid_state_drives_(SSD)
-
+					#Note that there's a privacy/security considerations to enabling TRIM with LUKS: https://wiki.archlinux.org/index.php/Dm-crypt/Specialties#Discard/TRIM_support_for_solid_state_drives_(kde
 graphical_de="kde"		#"xfce" for an XFCE4 (xorg) install
                         	#Or "kde" for a KDE Plasma 5 (wayland) install. Somewhat reduced install compared to the full 'kde5' meta-package. Uses a console-based display manager (emptty) rather than SDDM (as this would require Xorg).
                         	#Or leave blank (just double quotes, "") to not install DE. Will skip graphics driver installation as well
@@ -61,7 +60,7 @@ blue_services="bluetoothd"
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
-en_services=("dbus" "elogind" "NetworkManager" "ufw" "cronie" "ntpd" "udevd" "uuidd" "socklog-unix" "nanoklogd")
+en_services=("dbus" "NetworkManager" "ufw" "cronie" "ntpd" "udevd" "uuidd" "socklog-unix" "nanoklogd")
 	
 #Being part of the wheel group allows use of sudo so you'll be able to add yourself to more groups in the future without having to login as root
 #Some additional groups you may way to add to the above list (separate with commas, no spaces): floppy,cdrom,optical,audio,video,kvm,xbuilder
@@ -103,7 +102,9 @@ read -p "Do you want bluetooth packages? y/n: " response_bl
 
 if [[ $response_bl == "y" ]]; then
     apps="$apps $bluet"
-	en_services+=($blue_services)
+	if [[ ! (($graphical_de == "kde")) ]]; then
+		en_services+=($blue_services)
+	fi
 fi
 
 #Add CPU microcode, graphics drivers, and/or desktop environment packages to the list of packages to install
