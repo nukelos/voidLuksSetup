@@ -54,14 +54,14 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
 #ntfs-3g is needed for the windows combo setup.
-apps="xorg nano vim dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils tlp bash-completion" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="xorg nano vim socklog-void dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils tlp bash-completion" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
 bluet="bluez bluedevil" #bluedevil for GUI
 blue_services="bluetoothd"
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
-en_services=("dbus" "elogind" "NetworkManager" "ufw" "cronie" "ntpd" "udevd" "uuidd")
+en_services=("dbus" "elogind" "NetworkManager" "ufw" "cronie" "ntpd" "udevd" "uuidd" "socklog-unix" "nanoklogd")
 	
 #Being part of the wheel group allows use of sudo so you'll be able to add yourself to more groups in the future without having to login as root
 #Some additional groups you may way to add to the above list (separate with commas, no spaces): floppy,cdrom,optical,audio,video,kvm,xbuilder
