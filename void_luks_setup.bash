@@ -172,7 +172,7 @@ select line in $(fdisk -l | grep -v mapper | grep -o '/.*GiB' | tr -d ' '); do
         disk_selected=$(echo $line | sed 's/:.*$//')
         break
 done
-if [[ $disk_selected == *"sd"* ]]; then
+if [[ ($disk_selected == *"sd"*) || ($disk_selected == *"vda"*) ]]; then
 	efi_part=$(echo $disk_selected'1')
 	luks_part=$(echo $disk_selected'2')
 elif [[ $disk_selected == *"nvme0n1"* ]]; then
@@ -181,10 +181,19 @@ elif [[ $disk_selected == *"nvme0n1"* ]]; then
 fi
 
 #Wipe disk
-#wipefs -aq $disk_selected
-wipefs -aq $luks_part
+read -p "Do you want wipe contents of $disk_selected? y/n: " response_disk
+
+if [[ $response_disk == "y" ]]; then
+	#wipefs -aq $disk_selected
+	wipefs -aq $luks_part
+fi
+
+
 #Format disk as GPT, create EFI partition with size selected above and a 2nd partition with the remaining disk space
-#printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+read -p "Do you want setup $disk_selected format and partitions? y/n: " response_format
+if [[ $response_format == "y" ]]; then
+	printf 'label: gpt\n, %s, U, *\n, , L\n' "$efi_part_size" | sfdisk -q "$disk_selected"
+fi
 
 #Create LUKS encrypted partition
 echo $luks_pw | cryptsetup -q luksFormat --type luks1 $luks_part
