@@ -4,19 +4,19 @@
 #BEGIN MANDATORY FIELDS
 #These fields must be configured as per your computer hardware and desired install configuration
 
-efi_part_size="100M"		#Minimum of 100M, Arch wiki recommends at least 300M (as of 09-Jul-2023)
+efi_part_size="2G"		#Minimum of 100M, Arch wiki recommends at least 300M (as of 09-Jul-2023)
 
-root_part_size="100G"		#Size of the root partition. Required size depends on how much software you ultimately install
+root_part_size="210G"		#Size of the root partition. Required size depends on how much software you ultimately install
 				#If you run this install script without modifying the apps to be installed (including KDE graphical DE), about 4-5G is used
 				#Arch wiki recommends 15-20G (as of 09-Jul-2023)
 				#Alternatively, leave blank to omit creating a separate home partition, and have root occupy the entire drive
 				
-swap_size="28G"			#If you want to use suspend-to-disk (AKA hibernate), should be >= amount of RAM (some recommend 2x RAM if you have <8GB).
+swap_size="10G"			#If you want to use suspend-to-disk (AKA hibernate), should be >= amount of RAM (some recommend 2x RAM if you have <8GB).
 				#Otherwise, how much swap space (if any) is needed is debatable, rule of thumb I use is equal to square root of RAM (rounded up to whole GB)
 
-username="uncosine"			#Desired username for regular (non-root) user of the Void installation you're making
+username="kara"			#Desired username for regular (non-root) user of the Void installation you're making
 
-hostname="VoidLin"		#Desired name to be used for the hostname of the Void installation as well as the volume group name
+hostname="Voidbox"		#Desired name to be used for the hostname of the Void installation as well as the volume group name
 
 fs_type="ext4"			#Desired filesystem to be used for the root and home partitions
 
@@ -26,7 +26,7 @@ language="en_US.UTF-8"
 
 vendor_cpu="intel"		#Enter either "amd" or "intel" (all lowercase). This script assumes you're installing on an x86_64 system
 
-vendor_gpu="nvidia"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
+vendor_gpu="amd"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
 				#For AMD will install the OpenGL and Vulkan driver (mesa, not amdvlk), as well as the video acceration drivers.
 				#For Intel this installs OpenGL and Vulkan drivers, and video acceleration drivers
 				#For Nvidia this installs the proprietary driver. It assumes you're using a non-legacy GPU, which generally means any Geforce 600 or newer GTX card (some of the low end GT cards from 600, 700, and 800 series are legacy) 
@@ -34,16 +34,16 @@ vendor_gpu="nvidia"		#Enter either "amd", "intel", or "nvidia" (all lowercase)
 discards="rd.luks.allow-discards"	#If you're installing on an SSD and you want discard (automatic TRIM) enabled, enter "rd.luks.allow-discards".
 					#Otherwise, leave blank (just double quotes, "")
 					#Note that there's a privacy/security considerations to enabling TRIM with LUKS: https://wiki.archlinux.org/index.php/Dm-crypt/Specialties#Discard/TRIM_support_for_solid_state_drives_(kde
-graphical_de="kde"		#"xfce" for an XFCE4 (xorg) install
+graphical_de=""		#"xfce" for an XFCE4 (xorg) install
                         	#Or "kde" for a KDE Plasma 5 (wayland) install. Somewhat reduced install compared to the full 'kde5' meta-package. Uses a console-based display manager (emptty) rather than SDDM (as this would require Xorg).
                         	#Or leave blank (just double quotes, "") to not install DE. Will skip graphics driver installation as well
 							#you can use the `plasma-desktop` install to have a minimal KDE Plasma DE
 
-is_game_ready=true		#Change to either "true" or "false" (all lowercase and remove the quotation)
+is_game_ready=false		#Change to either "true" or "false" (all lowercase and remove the quotation)
 						#This will install all needed drivers for Steam and Lutris in accordance to the gpu vendor (except for mesa since that's universal)
 						#This will also includes gamemode and MangoHud for stats and maximixing CPU governor
 
-void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found here: https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
+void_repo="https://repo-fi.voidlinux.org/"	#List of mirrors can be found here: https://docs.voidlinux.org/xbps/repositories/mirrors/index.html
 
 #END MANDATORY FIELDS
 ###############################################################################################################
@@ -53,10 +53,10 @@ void_repo="https://repo-fastly.voidlinux.org/"	#List of mirrors can be found her
 
 #If apparmor is included here, the script will also add the apparmor security modules to the GRUB command line parameters
 #ntfs-3g is needed for the windows combo setup.
-apps="xorg nano vim socklog-void dbus apparmor ufw cronie ntp firefox torbrowser-launcher xdg-desktop-portal xdg-user-dirs xdg-utils alacritty flatpak vscode ntfs-3g udisks2 vlc Signal-Desktop alsa-utils tlp bash-completion" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
+apps="" #gufw rclone RcloneBrowser chromium libreoffice-calc libreoffice-writer
 
-bluet="bluez bluedevil" #bluedevil for GUI
-blue_services="bluetoothd"
+#bluet="bluez bluedevil" #bluedevil for GUI
+#blue_services="bluetoothd"
 
 #elogind and acpid should not both be enabled. Same with dhcpcd and NetworkManager.
 rm_services=("agetty-tty2" "agetty-tty3" "agetty-tty4" "agetty-tty5" "agetty-tty6" "mdadm" "sshd" "acpid" "dhcpcd") 
@@ -73,19 +73,19 @@ user_groups="wheel,floppy,cdrom,optical,audio,video,kvm,xbuilder"
 #Or you have an old Nvidia or AMD/ATI GPU, and need to use a different driver package
 
 declare apps_intel_cpu="intel-ucode"
-declare apps_amd_cpu="linux-firmware-amd"
+#declare apps_amd_cpu="linux-firmware-amd"
 declare apps_amd_gpu="linux-firmware-amd mesa-dri vulkan-loader mesa-vulkan-radeon mesa-vaapi mesa-vdpau xf86-video-amdgpu"
-declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
-declare apps_nvidia_gpu="nvidia"
-declare apps_kde="kde5 sddm elogind kcron ark spectacle xdg-desktop-portal-kde pinentry-qt plasma-applet-active-window-control kde-gtk-config breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular"
+#declare apps_intel_gpu="linux-firmware-intel mesa-dri mesa-vulkan-intel intel-video-accel xf86-video-intel"
+#declare apps_nvidia_gpu="nvidia"
+#declare apps_kde="kde5 sddm elogind kcron ark spectacle xdg-desktop-portal-kde pinentry-qt plasma-applet-active-window-control kde-gtk-config breeze-gtk kscreen plasma-nm plasma-pa pcmanfm-qt upower xdg-user-dirs-gtk okular"
 	#plasma-firewall GUI front end for ufw, still buggy 30/08/2023 
 	#upower needed for battery notification. 
 	#powerdevil is for battery management but TLP is fine.
-declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
-declare apps_pipewire="alsa-pipewire pipewire wireplumber"
-declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit vulkan-loader vulkan-loader-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
-declare game_amd="libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
-declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
+#declare apps_xfce="lightdm lightdm-gtk3-greeter xfce4 xdg-desktop-portal-gtk xdg-user-dirs-gtk"
+#declare apps_pipewire="alsa-pipewire pipewire wireplumber"
+#declare game_driver="libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit mesa-dri-32bit vulkan-loader vulkan-loader-32bit MangoHud gamemode libgamemode-32bit gnutls-32bit steam lutris"
+#declare game_amd="libspa-vulkan libspa-vulkan-32bit mesa-vulkan-radeon mesa-vulkan-radeon-32bit"
+#declare game_intel="mesa-vulkan-intel mesa-vulkan-intel-32bit"
 
 #END CPU/DRIVER/DE PACKAGES
 ###############################################################################################################
@@ -372,34 +372,10 @@ chroot /mnt chown $username:$username /home/$username/.config/autostart
 chroot /mnt chmod 755 /home/$username/.config/autostart
 #need to update the method used here
 
-#Creates typical folders in user's home directory, sets ownership and permissions of the folders as well
-#It appears this is not necessary, as the user folders will automatically be created on first login
-#for dir in Desktop Documents Downloads Videos Pictures Music; do
-	#if [[ ! -e /mnt/home/$username/$dir ]]; then
-		#chroot /mnt mkdir -p /home/$username/$dir
-		#chroot /mnt chown $username:$username /home/$username/$dir
-		#chroot /mnt chmod 700 /home/$username/$dir
-	#fi
-#done
-
-#Includes the .bash_aliases file as part of .bashrc. This is a more modular way of adding aliases (which can also be added directly to .bashrc)
-echo 'if [ -e $HOME/.bash_aliases ]; then
-source $HOME/.bash_aliases
-fi' >> /mnt/home/$username/.bashrc
-#Create .bash_aliases file, sets owner to user
-chroot /mnt touch /home/$username/.bash_aliases
-chroot /mnt chown $username:$username /home/$username/.bash_aliases
-#Some personal aliases I use to shorten package manager commands. Inpsired by the command syntax used for xbps commands by the xtools package (http://git.vuxu.org/xtools)
-echo "alias xi='sudo xbps-install -S'" >> /mnt/home/$username/.bash_aliases 
-echo "alias xu='sudo xbps-install -Suy'" >> /mnt/home/$username/.bash_aliases 
-echo "alias xs='xbps-query -Rs'" >> /mnt/home/$username/.bash_aliases 
-echo "alias xr='sudo xbps-remove -oOR'" >> /mnt/home/$username/.bash_aliases 
-echo "alias xq='xbps-query'" >> /mnt/home/$username/.bash_aliases 
-
 #Script updatd to use SDDM for a KDE install rather than emptty, emptty config below disabled
 #If so, set emptty to use the TTY that is one higher than the number that are configured to be enabled in /var/service/
 #By default, this script disables all TTYs except for TTY1, so set emptty to use TTY2.
-num_tty=1
+num_tty=9
 #if [[ $apps == *"emptty"* ]]; then
 #	sed -i "s/^#*TTY_NUMBER=[0-9]*/TTY_NUMBER=$num_tty/i" /mnt/etc/emptty/conf
 #	#Set default emptty login as the non-root user that was created
